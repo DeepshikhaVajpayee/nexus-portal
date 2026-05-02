@@ -1,8 +1,7 @@
-version: '3.8'
-
 services:
   web:
     build: .
+    container_name: nexus-web
     ports:
       - "8000:80"
     volumes:
@@ -12,9 +11,10 @@ services:
 
   db:
     image: mysql:8.0
+    container_name: nexus-db
     restart: always
     environment:
-      MYSQL_DATABASE: nexus_portal
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: nexus_portal
     ports:
-      - "3306:3306"
+      - "3307:3306"
