@@ -172,8 +172,12 @@ Employee productivity stable across Engineering teams.
 // Load attendance logs
 async function loadAttendance(){
 
-    let res = await fetch('/api/attendance/logs.php');
-    let data = await res.json();
+    let token = localStorage.getItem("token");
+    let res = await fetch('/api/attendance/logs.php', {
+    headers:{
+        "Authorization": "Bearer " + token
+    }
+    });
 
     let table = document.getElementById('attendanceTable');
 

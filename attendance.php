@@ -77,9 +77,11 @@ async function scanRFID(){
 }
 
 async function loadAttendance(){
-    let res = await fetch("/api/attendance/logs.php");
-    let data = await res.json();
-
+    let token = localStorage.getItem("token");
+    let res = await fetch('/api/attendance/logs.php', {
+    headers:{
+        "Authorization": "Bearer " + token
+    }});
     let table = document.getElementById("attendanceTable");
     table.innerHTML = "";
 
@@ -96,6 +98,12 @@ async function loadAttendance(){
 
 loadAttendance();
 setInterval(loadAttendance,3000);
+</script>
+<script>
+function logout(){
+    localStorage.removeItem("token");
+    window.location = "login.php";
+}
 </script>
 
 </body>

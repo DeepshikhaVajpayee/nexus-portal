@@ -63,11 +63,11 @@ body{background:#0f172a;color:white;font-family:Arial;}
 async function generateReport(){
     let reportType = document.querySelector("select").value;
 
-    let res = await fetch("/api/reports/generate.php", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({report_type: reportType})
-    });
+    let token = localStorage.getItem("token");
+    let res = await fetch('/api/reports/list.php', {
+    headers:{
+        "Authorization": "Bearer " + token
+    }});
 
     let data = await res.json();
 
@@ -97,5 +97,18 @@ async function loadReports(){
 
 loadReports();
 </script>
+<script>
+function logout(){
+    localStorage.removeItem("token");
+    window.location = "login.php";
+}
+</script>
+<script>
+function logout(){
+    localStorage.removeItem("token");
+    window.location = "login.php";
+}
+</script>
+
 </body>
 </html>

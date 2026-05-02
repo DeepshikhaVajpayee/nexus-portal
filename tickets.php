@@ -81,9 +81,11 @@ async function createTicket(){
 }
 
 async function loadTickets(){
-    let res = await fetch("/api/tickets/list.php");
-    let data = await res.json();
-
+    let token = localStorage.getItem("token");
+    let res = await fetch('/api/tickets/list.php', {
+    headers:{
+        "Authorization": "Bearer " + token
+    }});
     let table = document.getElementById("ticketTable");
     table.innerHTML = "";
 
@@ -100,6 +102,13 @@ async function loadTickets(){
 
 loadTickets();
 </script>
-
+<script>
+    <script>
+function logout(){
+    localStorage.removeItem("token");
+    window.location = "login.php";
+}
+</script>
 </body>
+
 </html>

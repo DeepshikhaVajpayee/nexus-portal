@@ -7,18 +7,10 @@ require_once "../../config/jwt.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-if(!$data){
-    echo json_encode([
-        "status" => "error",
-        "message" => "No input received"
-    ]);
-    exit;
-}
+$email = $data['email'] ?? '';
+$password = $data['password'] ?? '';
 
-$email = trim($data['email'] ?? '');
-$password = trim($data['password'] ?? '');
-
-$stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+$stmt = $pdo->prepare("SELECT * FROM users WHERE email=?");
 $stmt->execute([$email]);
 
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,21 +20,18 @@ if($user && password_verify($password, $user['password'])){
     $token = generateToken($user);
 
     echo json_encode([
-        "status" => "success",
-        "message" => "Login successful",
-        "token" => $token,
-        "user" => [
-            "id" => $user['id'],
-            "name" => $user['name'],
-            "role" => $user['role']
+        "status"=>"success",
+        "token"=>$token,
+        "user"=>[
+            "id"=>$user['id'],
+            "name"=>$user['name'],
+            "role"=>$user['role']
         ]
     ]);
 
-} else {
+}else{
     echo json_encode([
-        "status" => "error",
-        "message" => "Invalid credentials"
+        "status"=>"error",
+        "message"=>"Invalid credentials"
     ]);
 }
-
-?>

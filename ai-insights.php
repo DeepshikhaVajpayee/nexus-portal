@@ -64,6 +64,12 @@ function askAI(){
     "AI Insight: Based on workforce trends, attendance is stable but monitoring is recommended for repeated late check-ins.";
 }
 </script>
+<script>
+function logout(){
+    localStorage.removeItem("token");
+    window.location = "login.php";
+}
+</script>
 
 </body>
 </html>
