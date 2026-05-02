@@ -48,13 +48,54 @@ body{background:#0f172a;color:white;font-family:Arial;}
 </div>
 </div>
 </div>
-
+<table class="table">
+<thead>
+<tr>
+<th>Report Name</th>
+<th>Type</th>
+<th>Status</th>
+<th>Generated At</th>
+</tr>
+</thead>
+<tbody id="reportsTable"></tbody>
+</table>
 <script>
-function generateReport(){
-    document.getElementById("reportMsg").innerHTML =
-    "✅ Monthly report generated successfully.";
-}
-</script>
+async function generateReport(){
+    let reportType = document.querySelector("select").value;
 
+    let res = await fetch("/api/reports/generate.php", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({report_type: reportType})
+    });
+
+    let data = await res.json();
+
+    document.getElementById("reportMsg").innerHTML =
+    "✅ " + data.message;
+
+    loadReports();
+}
+
+async function loadReports(){
+    let res = await fetch("/api/reports/list.php");
+    let data = await res.json();
+
+    let table = document.getElementById("reportsTable");
+    table.innerHTML = "";
+
+    data.reports.forEach(r => {
+        table.innerHTML += `
+        <tr>
+            <td>${r.report_name}</td>
+            <td>${r.report_type}</td>
+            <td>${r.status}</td>
+            <td>${r.created_at}</td>
+        </tr>`;
+    });
+}
+
+loadReports();
+</script>
 </body>
 </html>

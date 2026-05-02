@@ -63,19 +63,42 @@ body{background:#0f172a;color:white;font-family:Arial;}
 </div>
 
 <script>
-function createTicket(){
+async function createTicket(){
     let title = document.getElementById("title").value;
-    let desc = document.getElementById("description").value;
+    let description = document.getElementById("description").value;
     let priority = document.getElementById("priority").value;
 
-    document.getElementById("ticketTable").innerHTML += `
-    <tr>
-        <td>${title}</td>
-        <td>${desc}</td>
-        <td>${priority}</td>
-        <td>Open</td>
-    </tr>`;
+    let res = await fetch("/api/tickets/create.php", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({title, description, priority})
+    });
+
+    let data = await res.json();
+    alert(data.message);
+
+    loadTickets();
 }
+
+async function loadTickets(){
+    let res = await fetch("/api/tickets/list.php");
+    let data = await res.json();
+
+    let table = document.getElementById("ticketTable");
+    table.innerHTML = "";
+
+    data.tickets.forEach(t => {
+        table.innerHTML += `
+        <tr>
+            <td>${t.title}</td>
+            <td>${t.description}</td>
+            <td>${t.priority}</td>
+            <td>${t.status}</td>
+        </tr>`;
+    });
+}
+
+loadTickets();
 </script>
 
 </body>
