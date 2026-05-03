@@ -3,6 +3,7 @@
 <head>
 <title>Attendance - Nexus Portal</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
 <style>
 body{background:#0f172a;color:white;font-family:Arial;}
 .sidebar{height:100vh;background:#111827;padding:20px;}
@@ -13,12 +14,14 @@ body{background:#0f172a;color:white;font-family:Arial;}
 </head>
 
 <body>
+
 <div class="container-fluid">
 <div class="row">
 
 <?php include "sidebar.php"; ?>
 
 <div class="col-md-10 p-4">
+
 <h2>Attendance Monitoring</h2>
 
 <div class="card-box mt-4">
@@ -58,52 +61,55 @@ body{background:#0f172a;color:white;font-family:Arial;}
 
 <script>
 async function scanRFID(){
-    let uid = document.getElementById("uid").value;
+    let uid = document.getElementById("uid").value.trim();
 
-    let res = await fetch("/api/attendance/scan.php", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({uid:uid})
+    let res = await fetch("api/attendance/scan.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({uid: uid})
     });
 
     let data = await res.json();
 
     document.getElementById("scanResult").innerHTML =
         data.status === "success"
-        ? `✅ ${data.employee} - ${data.attendance_status}`
-        : `❌ ${data.message}`;
+        ? "✅ " + data.employee + " - " + data.attendance_status
+        : "❌ " + data.message;
+
+    document.getElementById("uid").value = "";
 
     loadAttendance();
 }
 
 async function loadAttendance(){
-    let token = localStorage.getItem("token");
-    let res = await fetch('/api/attendance/logs.php', {
-    headers:{
-        "Authorization": "Bearer " + token
-    }});
+    let res = await fetch("api/attendance/logs.php");
+    let data = await res.json();
+
     let table = document.getElementById("attendanceTable");
     table.innerHTML = "";
 
-    data.logs.forEach(log=>{
+    if(data.logs.length === 0){
+        table.innerHTML = `<tr><td colspan="4">No attendance logs found</td></tr>`;
+        return;
+    }
+
+    data.logs.forEach(log => {
         table.innerHTML += `
         <tr>
             <td>${log.name}</td>
             <td>${log.department}</td>
-            <td style="color:${log.status==='Checked In'?'lightgreen':'orange'}">${log.status}</td>
+            <td>${log.status}</td>
             <td>${log.scan_time}</td>
         </tr>`;
     });
 }
 
-loadAttendance();
-setInterval(loadAttendance,3000);
-</script>
-<script>
 function logout(){
     localStorage.removeItem("token");
     window.location = "login.php";
 }
+
+loadAttendance();
 </script>
 
 </body>
